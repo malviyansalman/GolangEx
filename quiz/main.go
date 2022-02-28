@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"go.uber.org/zap"
 	"os"
+	"strings"
+	"time"
 )
 
 var logger = GolangEx.GetLogger()
@@ -14,9 +16,9 @@ var logger = GolangEx.GetLogger()
 func main() {
 
 	fileName := flag.String("fileName", "problems.csv", "Used for passing the problem name")
+	timeLimit := flag.Int("limit", 5, "Timer for each Question")
 	flag.Parse()
 	file, err := os.Open(*fileName)
-
 	if err != nil {
 		logger.Info("Unable to Open file", zap.Any("Error", err))
 	}
@@ -27,12 +29,26 @@ func main() {
 	}
 	problems := parseCSV(lines)
 	count := 0
+	fmt.Println(*timeLimit)
+	fmt.Println("Press Enter to Start the timer")
+	fmt.Scanf("%v")
+	timer := time.NewTimer(time.Duration(*timeLimit) * time.Second)
 	for i, prob := range problems {
 		fmt.Printf("Problem # %d : %s = \n", i+1, prob.ques)
-		var ans string
-		fmt.Scanf("%s", &ans)
-		if ans == prob.ans {
-			count += 1
+		ansChan := make(chan string)
+		go func() {
+			var ans string
+			fmt.Scanf("%s", &ans)
+			ansChan <- ans
+		}()
+		select {
+		case <-timer.C:
+			fmt.Printf("You score %d out of %d\n", count, len(problems))
+			return
+		case ans := <-ansChan:
+			if ans == prob.ans {
+				count += 1
+			}
 		}
 	}
 	fmt.Printf("You score %d out of %d\n", count, len(problems))
@@ -44,7 +60,7 @@ func parseCSV(lines [][]string) []problem {
 	for i, line := range lines {
 		problems[i] = problem{
 			ques: line[0],
-			ans:  line[1],
+			ans:  strings.TrimSpace(line[1]),
 		}
 	}
 	return problems
