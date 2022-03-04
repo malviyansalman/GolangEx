@@ -6,3 +6,4 @@ bazel/TestService/vendor/*
 bazel/GreeterService/vendor/*
 bazel/GreeterServiceImp/vendor/*
 bazel/DbDir/vendor/*
+.DS_Store
