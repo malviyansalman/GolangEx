@@ -1,2 +1,4 @@
 quiz/main
 .idea
+../.DS_Store
+#bazel/.idea
