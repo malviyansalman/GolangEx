@@ -1,2 +1,9 @@
 quiz/main
 .idea
+../.DS_Store
+bazel/.idea
+bazel/TestService/vendor/*
+bazel/GreeterService/vendor/*
+bazel/GreeterServiceImp/vendor/*
+bazel/DbDir/vendor/*
+.DS_Store
